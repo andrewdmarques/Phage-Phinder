@@ -373,7 +373,7 @@ ref <- ref[ , -which(names(ref) %in% c("filter"))]
 # Make an index file for the reference.
 ref_files <- c('T1','T2','T3','T4','T5','T6','T7','T8','T9','T10','T11','T12','T13','T14','T15','T16','T17','T18','T19','T20')
 for(ii in 1:length(ref_files)){
-  system(paste0('cp ./Bin/',ref_files[ii],'.fasta ./'))
+  system(paste0('cp ./Assets/',ref_files[ii],'.fasta ./'))
   system(paste0('bwa index ',ref_files[ii],'.fasta'))
 }
 
@@ -392,7 +392,7 @@ system('bcftools 2> temp.txt')
 version <- read.table('temp.txt', sep = '!')
 ref$version_bcftools <- gsub('Version: ','', version$V1[2])
 # BBmap
-system('./Bin/bbmap/bbmap.sh -version 2> temp.txt')
+system('./Assets/bbmap/bbmap.sh -version 2> temp.txt')
 version <- read.table('temp.txt', sep = '!')
 ref$version_bbmap <- gsub('BBMap version ','', version$V1[2])
 
@@ -460,7 +460,7 @@ for(ii in 1:nrow(ref)){
   
   # Make the pileup through bbmap.
   file_pileup <- paste0(ref$PSP[ii],'.txt')
-  ref$command_pileup1[ii] <- paste0('./Bin/bbmap/pileup.sh in=./01_Bam-Files/',ref$sample_id[ii],'_genome.filt.qual.sorted.bam', ' ref=',c1,' out=./02_Variant-Calling/',ref$sample_id[ii],'_covstats.txt basecov=./02_Variant-Calling/',ref$sample_id[ii],'_basecov.txt countgc=f overwrite=t 2> ',file_pileup)
+  ref$command_pileup1[ii] <- paste0('./Assets/bbmap/pileup.sh in=./01_Bam-Files/',ref$sample_id[ii],'_genome.filt.qual.sorted.bam', ' ref=',c1,' out=./02_Variant-Calling/',ref$sample_id[ii],'_covstats.txt basecov=./02_Variant-Calling/',ref$sample_id[ii],'_basecov.txt countgc=f overwrite=t 2> ',file_pileup)
   system(ref$command_pileup1[ii])
   
   # Extract the stats from bbmap and record them to the stat file.
@@ -476,7 +476,7 @@ for(ii in 1:nrow(ref)){
   if(!grepl('too low coverage', ref$error[ii])){ref <- make_consensus(ii, minAF, minCoverage, ref)}
   
   # Call variants.
-  ref$command_var1[ii] <- paste0('./Bin/bbmap/callvariants.sh in=./01_Bam-Files/',ref$sample_id[ii],'_genome.filt.qual.sorted.bam ref=',c1,' out=./02_Variant-Calling/',ref$sample_id[ii],'_allVariants.vcf shist=./02_Variant-Calling/',ref$sample_id[ii],'_variantQualityHisto.txt rarity=0 overwrite=t clearfilters')
+  ref$command_var1[ii] <- paste0('./Assets/bbmap/callvariants.sh in=./01_Bam-Files/',ref$sample_id[ii],'_genome.filt.qual.sorted.bam ref=',c1,' out=./02_Variant-Calling/',ref$sample_id[ii],'_allVariants.vcf shist=./02_Variant-Calling/',ref$sample_id[ii],'_variantQualityHisto.txt rarity=0 overwrite=t clearfilters')
   system(ref$command_var1[ii])
   
   # # If there are enough reads, then attempt to make a consensus.
